@@ -1,29 +1,29 @@
+require('dotenv').config();
 
-const API_KEY = process.env.API_KEY;
+const API_KEY : string | undefined = process.env.REACT_APP_API_KEY;
 
-export const searchRecipes  = async (_searchTerm : String, _page : number) =>{
+export const searchRecipes = async (searchTerm: string, page: number) => {
+  if (!API_KEY) {
+    throw new Error("API key not found");
+  }
 
-    if(!API_KEY){
-        throw new Error("Api Key not found!")
-    }
-    
-    const baseURL : string = "https://api.spoonacular.com/recipes/complexSearch";
-    const url : URL = new URL(baseURL);
+  const baseURL = "https://api.spoonacular.com/recipes/complexSearch";
+  const url = new URL(baseURL);
 
-    const queryParams : Object = {
-        apiKey: API_KEY,
-        query: _searchTerm,
-        number: 10,
-        offset: (_page - 1) * 10
-    };
+  const queryParams = {
+    apiKey: API_KEY,
+    query: searchTerm,
+    number: 10 + '',
+    offset: (page - 1) * 1 + '',
+  };
 
-    url.search = new URLSearchParams(JSON.stringify(queryParams)).toString();
+  url.search = new URLSearchParams(queryParams).toString();
 
-    try {
-        const searchResponse : Response = await fetch(url.toString());
-        const resultsJson : Response = await searchResponse.json();
-        return resultsJson;
-      } catch (error) {
-        console.error(error);
-      }
-} 
+  try {
+    const searchResponse = await fetch(url.toString());
+    const resultsJson = await searchResponse.json();
+    return resultsJson;
+  } catch (error) {
+    console.error(error);
+  }
+};
